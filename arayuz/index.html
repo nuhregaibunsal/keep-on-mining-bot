@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KoM Bot Paneli</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#171a21; --panel2:#1d2129; --line:#2a2f3a; --text:#e7e9ee; --muted:#8b93a3;
+  --amber:#f2b33d; --amber-d:#8a6320; --green:#4cc38a; --red:#e5605a; --blue:#5aa2e5; --purple:#a77be8;
+  --r:10px; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 72px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 0 14px;border-bottom:1px solid var(--line)}
+.logo{font-weight:700;letter-spacing:.3px;font-size:17px}
+.logo span{color:var(--amber)}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:99px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.on .dot{background:var(--green);box-shadow:0 0 0 3px #4cc38a22}
+.pill.on{color:var(--text)}
+.pill.warn .dot{background:var(--amber)}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:#3a4150}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1205;font-weight:600}
+.btn.primary.stop{background:transparent;color:var(--amber)}
+.btn.small{padding:4px 10px;font-size:12.5px}
+.spacer{flex:1}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:12.5px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:4px 9px;border-radius:7px}
+.chip b{color:var(--text);font-weight:600}
+nav{display:flex;gap:4px;margin:14px 0}
+nav button{background:none;border:none;padding:8px 14px;border-radius:8px;color:var(--muted);cursor:pointer}
+nav button.act{background:var(--panel2);color:var(--text)}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card h3{margin:0 0 10px;font-size:12.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.kpi .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted)}
+.two{grid-template-columns:1.2fr 1fr}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.bar{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--amber);border-radius:99px;transition:width .4s}
+.bar.green i{background:var(--green)} .bar.blue i{background:var(--blue)} .bar.purple i{background:var(--purple)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.muted{color:var(--muted)} .num{font-variant-numeric:tabular-nums}
+.wallet{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.wallet div{background:var(--panel2);border-radius:8px;padding:7px 10px;font-size:13px}
+.wallet div b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.goal{margin:10px 0}
+.goal .row{font-size:13px;margin-bottom:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.up{color:var(--green)} .down{color:var(--red)}
+svg text{fill:var(--muted);font-size:11px}
+.chart{width:100%;height:220px}
+select{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 8px}
+.hidden{display:none!important}
+/* ayarlar */
+.sect{border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;background:var(--panel)}
+.sect>summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:baseline}
+.sect>summary::-webkit-details-marker{display:none}
+.sect>summary small{color:var(--muted);font-weight:400}
+.field{display:grid;grid-template-columns:220px 200px 1fr;gap:12px;align-items:center;padding:8px 14px;border-top:1px solid var(--line)}
+@media (max-width:760px){.field{grid-template-columns:1fr}}
+.field label{font-family:var(--mono);font-size:12.5px}
+.field .help{color:var(--muted);font-size:12.5px}
+.field input[type=text],.field input[type=number]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 8px}
+.field input.err{border-color:var(--red)}
+.tog{position:relative;width:40px;height:22px;display:inline-block}
+.tog input{opacity:0;width:0;height:0}
+.tog span{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:.2s;cursor:pointer}
+.tog span:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#cfd3db;border-radius:50%;transition:.2s}
+.tog input:checked+span{background:var(--amber-d)}
+.tog input:checked+span:before{transform:translateX(18px);background:var(--amber)}
+textarea.raw{width:100%;min-height:60vh;background:#0b0d10;border:1px solid var(--line);border-radius:var(--r);padding:12px;font:12.5px/1.5 var(--mono)}
+.toast{position:fixed;right:16px;top:16px;background:var(--panel2);border:1px solid var(--line);padding:9px 14px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+.toast.err{border-color:var(--red)}
+/* günlük */
+#log{position:fixed;left:0;right:0;bottom:0;background:#0c0e12f2;border-top:1px solid var(--line);backdrop-filter:blur(6px);z-index:5}
+#logbar{display:flex;gap:10px;align-items:center;padding:7px 16px;cursor:pointer;font-size:12.5px;color:var(--muted);max-width:1240px;margin:0 auto}
+#logbar .last{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#logbody{height:0;overflow:hidden;transition:height .25s}
+#log.open #logbody{height:42vh}
+#logtools{display:flex;gap:6px;padding:0 16px 8px;max-width:1240px;margin:0 auto;flex-wrap:wrap}
+#logtools button{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+#logtools button.act{color:var(--text);border-color:var(--amber-d)}
+#loglist{height:calc(42vh - 40px);overflow:auto;padding:0 16px 10px;max-width:1240px;margin:0 auto;font-size:12.5px}
+.ev{display:grid;grid-template-columns:62px 74px 1fr;gap:8px;padding:4px 0;border-bottom:1px solid #1b1f27}
+.ev time{color:var(--muted);font-family:var(--mono);font-size:11.5px}
+.ev .m{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.ev.karar .m{color:var(--amber)} .ev.oturum .m{color:var(--green)} .ev.hata .msg{color:var(--red)}
+.ev details summary{cursor:pointer;color:var(--muted);font-size:11.5px;list-style:none}
+.ev details summary:before{content:"neden? ";color:var(--amber)}
+.ev .why{margin:6px 0 4px;padding:8px 10px;background:var(--panel);border-radius:7px;font-family:var(--mono);font-size:11.5px;white-space:pre-wrap;color:#c8ccd5}
+.recent .ev{grid-template-columns:62px 1fr}
+.empty{color:var(--muted);font-size:13px;padding:10px 0}
+.arts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.art{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+.art.ok{border-color:#2f5e45}
+.art .r{font-size:11px;text-transform:uppercase;letter-spacing:.4px}
+.r.Yaygın{color:var(--green)} .r.Nadir{color:var(--blue)} .r.Epik{color:var(--red)} .r.Efsanevi{color:var(--amber)}
+.art .e{color:var(--muted);font-size:12px}
+.art.ok .e{color:var(--green)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.kart{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px}
+.kart.sec{border-color:var(--amber-d)}
+.kart .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.kart .t b{font-size:14px}
+.kart p{margin:0;color:#c3c8d2;font-size:12.5px;flex:1}
+.kart .w{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.kart input{width:70px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 6px}
+.badge{font-size:11px;padding:2px 7px;border-radius:99px;background:var(--panel2);color:var(--muted)}
+.badge.on{background:#3a2a0d;color:var(--amber)}
+.form2{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+.form2 label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.form2 input,.form2 select{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">KoM <span>Bot</span></div>
+    <span id="status" class="pill"><i class="dot"></i><span>bağlanıyor…</span></span>
+    <button id="toggle" class="btn primary">Başlat</button>
+    <div class="spacer"></div>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <nav>
+    <button data-tab="genel" class="act">Genel</button>
+    <button data-tab="ist">İstatistik ve getiri</button>
+    <button data-tab="eser">Eserler</button>
+    <button data-tab="kart">Kartlar</button>
+    <button data-tab="deney">Deney</button>
+    <button data-tab="ayar">Ayarlar</button>
+  </nav>
+
+  <!-- GENEL -->
+  <section id="genel">
+    <div class="grid kpis" id="kpis"></div>
+    <div class="grid two" style="margin-top:12px">
+      <div class="card">
+        <h3>Şu an</h3>
+        <div id="now"></div>
+        <h3 style="margin-top:16px">Cüzdan</h3>
+        <div class="wallet" id="wallet"></div>
+      </div>
+      <div class="grid" style="align-content:start">
+        <div class="card">
+          <h3>Birikim hedefleri</h3>
+          <div id="goals" class="empty">Planlayıcı ilk turu yapınca görünür.</div>
+        </div>
+        <div class="card recent">
+          <h3>Son kararlar</h3>
+          <div id="recent" class="empty">Henüz karar yok.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- İSTATİSTİK -->
+  <section id="ist" class="hidden">
+    <div class="grid two">
+      <div class="card">
+        <div class="row"><h3>Oturum başına</h3>
+          <select id="metric"></select></div>
+        <svg id="chart" class="chart" viewBox="0 0 600 220" preserveAspectRatio="none"></svg>
+        <div class="muted" style="font-size:12px" id="chartnote"></div>
+      </div>
+      <div class="card">
+        <h3>Getiri: botun yatırımları işe yarıyor mu?</h3>
+        <div id="growth" class="empty">En az 4 oturum gerekiyor.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="row"><h3>Kaynaklar: toplam kazanç ve harcama</h3>
+        <button class="btn small" id="reset">İstatistikleri sıfırla</button></div>
+      <table id="restable"></table>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Modüllere göre harcama</h3>
+      <table id="modtable"></table>
+    </div>
+  </section>
+
+  <!-- ESERLER -->
+  <section id="eser" class="hidden">
+    <div class="grid kpis" id="eserkpi"></div>
+    <div class="card" style="margin-top:12px">
+      <div class="row"><h3>Eser koleksiyonu</h3><span class="muted" style="font-size:12px" id="esernot"></span></div>
+      <div id="eserler" class="arts"></div>
+    </div>
+  </section>
+
+  <!-- KARTLAR -->
+  <section id="kart" class="hidden">
+    <div class="row" style="margin-bottom:10px"><span class="muted">Önemi yüksek kart yeni dünyada önce seçilir; kırmızı kitapla seçili kartlardan <b>önem / seviye</b> puanı en yüksek olan yükseltilir. Değiştirince hemen kaydedilir.</span>
+      <span class="chip" id="kartkitap"></span></div>
+    <div id="kartlar" class="cards"></div>
+  </section>
+
+  <!-- DENEY -->
+  <section id="deney" class="hidden">
+    <div class="card">
+      <h3>Ayar karşılaştırma (A/B)</h3>
+      <p class="muted" style="margin-top:0;font-size:13px">Bir ayarın iki değeri maden oturumlarında sırayla (A, B, A, B…) denenir; botun büyümesinin etkisi böylece dengelenir. Bitince ayar eski haline döner.</p>
+      <div class="form2">
+        <label>Ayar<select id="dAyar"></select></label>
+        <label>A değeri<input id="dA" type="text"></label>
+        <label>B değeri<input id="dB" type="text"></label>
+        <label>Her taraf kaç oturum<input id="dN" type="number" value="8" min="2"></label>
+        <label>Ölçü<select id="dM"><option value="kaya">Kazılan kaya</option><option value="xp">XP</option><option value="gold">Altın kazancı</option><option value="silver">Gümüş kazancı</option><option value="ruby">Yakut kazancı</option><option value="eser">Eser</option></select></label>
+        <label style="flex-direction:row;align-items:center;gap:8px"><input id="dK" type="checkbox"> Kazananı otomatik uygula</label>
+        <button class="btn primary" id="dBas">Deneyi başlat</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="row"><h3>Sonuç</h3><button class="btn small" id="dDur">Deneyi durdur</button></div>
+      <div id="deneysonuc" class="empty">Çalışan ya da biten deney yok.</div>
+    </div>
+  </section>
+
+  <!-- AYARLAR -->
+  <section id="ayar" class="hidden">
+    <div class="row" style="margin-bottom:10px">
+      <span class="muted">Değişiklikler anında kaydedilir ve bot bir sonraki adımda yeni ayarla çalışır. Yorumlar korunur.</span>
+      <button class="btn small" id="rawtoggle">Ham dosyayı düzenle</button>
+    </div>
+    <div id="form"></div>
+    <div id="rawwrap" class="hidden">
+      <textarea id="raw" class="raw" spellcheck="false"></textarea>
+      <div class="row" style="margin-top:8px"><span class="muted">Geçersiz TOML kaydedilmez.</span>
+        <button class="btn primary" id="rawsave">Kaydet</button></div>
+    </div>
+  </section>
+</div>
+
+<div id="log">
+  <div id="logbar"><span>▴ Günlük</span><span class="last" id="loglast">—</span><span id="logcount"></span></div>
+  <div id="logbody">
+    <div id="logtools"></div>
+    <div id="loglist"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const TR = {gold:"Altın",silver:"Gümüş",copper:"Bakır",sulfur:"Kükürt",obsidian:"Obsidyen",titanium:"Titanyum",realgar:"Realgar",
+ rhodonite:"Rodonit",meteorite:"Meteorit",amberite:"Amberit",viridium:"Viridyum",mythril:"Mitril",digitite:"Digitit",magisite:"Magisit",
+ edenite:"Edenit",prismite:"Prizmit",ruby:"Yakut",quartz:"Kuvars",amethyst:"Ametist",peridot:"Peridot",sphene:"Sfen",emerald:"Zümrüt",
+ fireOpal:"Ateş opali",diamond:"Elmas",spinel:"Spinel",slimestone:"Balçık taşı",tanzanite:"Tanzanit",ammolite:"Amolit",redOpal:"Kırmızı opal",
+ alexandrite:"Aleksandrit",moonstone:"Ay taşı",solarite:"Solarit"};
+const MOD = {yetenek:"Yetenek ağacı",ors:"Örs",madenler:"Otomatik madenler",dunyalar:"Dünyalar"};
+const ad = k => k.endsWith("Coins") ? (TR[k.slice(0,-5)]||k.slice(0,-5))+" para" : (TR[k]||k);
+const $ = s => document.querySelector(s);
+const nf = new Intl.NumberFormat("tr-TR",{maximumFractionDigits:0});
+function kisa(n){ if(n==null||isNaN(n)) return "—"; const a=Math.abs(n);
+  if(a>=1e12) return (n/1e12).toFixed(1).replace(".",",")+" T"; if(a>=1e9) return (n/1e9).toFixed(1).replace(".",",")+" Mr";
+  if(a>=1e6) return (n/1e6).toFixed(1).replace(".",",")+" M"; if(a>=1e4) return (n/1e3).toFixed(1).replace(".",",")+" B"; return nf.format(n); }
+function sure(s){ s=Math.round(s||0); const h=Math.floor(s/3600), m=Math.floor(s%3600/60); return h? `${h} sa ${m} dk` : `${m} dk ${s%60} sn`; }
+function saat(t){ return new Date(t*1000).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+async function api(p, govde){ const r = await fetch(p, govde ? {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(govde)} : {}); return r.json(); }
+function toast(m, err){ const t=$("#toast"); t.textContent=m; t.className="toast show"+(err?" err":""); clearTimeout(t._h); t._h=setTimeout(()=>t.className="toast",2200); }
+
+/* sekmeler */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("act",x===b));
+  ["genel","ist","eser","kart","deney","ayar"].forEach(id=>$("#"+id).classList.toggle("hidden",id!==b.dataset.tab));
+  const t=b.dataset.tab; if(t==="ayar") ayarYukle(); if(t==="ist") istCiz(); if(t==="eser") eserYukle(); if(t==="kart") kartYukle(); if(t==="deney") deneyYukle();
+});
+
+/* durum */
+let calisiyor=false;
+$("#toggle").onclick = async ()=>{ const r = await api("/api/kontrol",{komut: calisiyor?"duraklat":"baslat"}); calisiyor=r.calisiyor; durumCiz(); };
+let D = {};
+async function durum(){
+  try{ D = await api("/api/durum"); calisiyor = D.bot.calisiyor; durumCiz(); }
+  catch(e){ $("#status").className="pill"; $("#status span").textContent="panel bağlantısı yok"; }
+}
+function durumCiz(){
+  const o = D.oyun||{}, b = D.bot||{};
+  const st=$("#status");
+  if(!o.bagli){ st.className="pill warn"; st.lastChild.textContent = b.asama==="hazır"?"oyuna bağlanılamadı":b.asama||"bekleniyor"; }
+  else if(calisiyor){ st.className="pill on"; st.lastChild.textContent = o.madende?"kazıyor":"oturum arası"; }
+  else { st.className="pill"; st.lastChild.textContent="duraklatıldı"; }
+  const t=$("#toggle"); t.textContent = calisiyor?"Duraklat":"Başlat"; t.classList.toggle("stop",calisiyor);
+  $("#chips").innerHTML = o.bagli ? [
+    ["Dünya",o.dunya],["Level",o.level],["Kazma",`#${o.kazma} · sv ${o.kazma_seviye}`],["Mor kitap",o.mor_kitap],["Kırmızı kitap",o.kirmizi_kitap]
+  ].map(([k,v])=>`<span class="chip">${k} <b>${v??"—"}</b></span>`).join("") : "";
+  const xp = o.xp_gereken ? Math.min(100, o.xp/o.xp_gereken*100) : 0;
+  $("#now").innerHTML = !o.bagli ? `<div class="empty">Oyun bağlı değil.</div>` : `
+    <div class="row"><span>${o.madende?"Madende":"Menüde / oturum arası"}</span><span class="muted num">${o.madende?`${(o.kalan||0).toFixed(1)} sn kaldı · ${o.kazilan??0} kaya`:""}</span></div>
+    <div class="bar green" style="margin:6px 0 12px"><i style="width:${o.madende?Math.min(100,(o.kalan||0)/30*100):0}%"></i></div>
+    <div class="row"><span>Level ${o.level}</span><span class="muted num">${kisa(o.xp)} / ${kisa(o.xp_gereken)} XP</span></div>
+    <div class="bar purple" style="margin-top:6px"><i style="width:${xp}%"></i></div>
+    <div class="row" style="margin-top:12px"><span class="muted">Kazma hasarı</span><span class="num">${(o.hasar||0).toFixed(2)}</span></div>`;
+  const w = o.cuzdan||{};
+  $("#wallet").innerHTML = Object.keys(w).length ? Object.entries(w).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><span class="muted">${ad(k)}</span><b>${kisa(v)}</b></div>`).join("") : `<div class="empty">—</div>`;
+  const g = D.hedefler||[];
+  $("#goals").className = g.length ? "" : "empty";
+  $("#goals").innerHTML = g.length ? g.map(h=>{ const p=Math.min(100,h.mevcut/h.gereken*100);
+    return `<div class="goal"><div class="row"><span>${esc(h.hedef)} <span class="muted">· ${MOD[h.modul]||h.modul}</span></span>
+      <span class="muted num">${kisa(h.mevcut)} / ${kisa(h.gereken)} ${ad(h.kaynak)}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join("")
+    : "Şu an biriktirilen bir hedef yok.";
+}
+
+/* istatistik */
+let IST=null;
+async function ist(){ try{ IST = await api("/api/istatistik"); }catch(e){ return; } kpiCiz(); if(!$("#ist").classList.contains("hidden")) istCiz(); }
+function kpiCiz(){
+  const s=IST, os=s.oturumlar||[], son=os.slice(-10);
+  const ort = son.length ? son.reduce((a,o)=>a+o.kaya,0)/son.length : 0;
+  const k=[["Çalışma süresi",sure(s.calisma_suresi),"bot açıkken"],["Oturum",nf.format(s.oturum_sayisi),"tamamlanan maden"],
+    ["Kazılan kaya",kisa(s.kaya),`son 10 ort. ${nf.format(ort)}/oturum`],["Bulunan eser",nf.format(s.eser),"bot çalışırken"],
+    ["Kazanılan XP",kisa(s.xp),"toplam"]];
+  $("#kpis").innerHTML = k.map(([a,v,t])=>`<div class="card kpi"><h3>${a}</h3><div class="v">${v}</div><div class="s">${t}</div></div>`).join("");
+}
+function metrikler(){
+  const m = {kaya:"Kazılan kaya", xp:"XP"}; (IST.oturumlar||[]).forEach(o=>Object.keys(o.kazanc||{}).forEach(k=>m["k:"+k]=ad(k)+" kazancı"));
+  return m;
+}
+function istCiz(){
+  if(!IST) return;
+  const sel=$("#metric"), m=metrikler(), onceki=sel.value;
+  sel.innerHTML = Object.entries(m).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+  sel.value = m[onceki]?onceki:"kaya"; sel.onchange=grafik; grafik();
+  // kaynak tablosu
+  const kz=IST.kazanc||{}, hr=IST.harcama||{}, toplamH={};
+  Object.values(hr).forEach(h=>Object.entries(h).forEach(([k,v])=>toplamH[k]=(toplamH[k]||0)+v));
+  const anah=[...new Set([...Object.keys(kz),...Object.keys(toplamH)])].sort((a,b)=>(kz[b]||0)-(kz[a]||0));
+  const cuz=(D.oyun||{}).cuzdan||{}, n=Math.max(1,IST.oturum_sayisi);
+  $("#restable").innerHTML = `<tr><th>Kaynak</th><th>Toplam kazanç</th><th>Oturum başına</th><th>Toplam harcama</th><th>Net</th><th>Şu an</th></tr>`+
+    (anah.length? anah.map(k=>{const net=(kz[k]||0)-(toplamH[k]||0);
+      return `<tr><td>${ad(k)}</td><td>${kisa(kz[k]||0)}</td><td>${kisa((kz[k]||0)/n)}</td><td>${kisa(toplamH[k]||0)}</td>
+      <td class="${net>=0?"up":"down"}">${net>=0?"+":""}${kisa(net)}</td><td>${kisa(cuz[k])}</td></tr>`}).join("")
+      : `<tr><td colspan="6" class="empty">Henüz oturum yok.</td></tr>`);
+  const isl=IST.islem||{};
+  $("#modtable").innerHTML = `<tr><th>Modül</th><th>İşlem</th><th>Harcanan</th></tr>`+
+    (Object.keys(hr).length? Object.entries(hr).map(([md,h])=>`<tr><td>${MOD[md]||md}</td><td>${nf.format(isl[md]||0)}</td>
+      <td>${Object.entries(h).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${kisa(v)} ${ad(k)}`).join(" · ")}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="empty">Henüz harcama yok.</td></tr>`);
+  // getiri: ilk yarı vs son yarı (oturum başına)
+  const os=IST.oturumlar||[];
+  if(os.length<4){ $("#growth").className="empty"; $("#growth").textContent="En az 4 oturum gerekiyor."; return; }
+  const yari=Math.floor(os.length/2), a=os.slice(0,yari), b=os.slice(-yari);
+  const ort=(arr,f)=>arr.reduce((s,o)=>s+f(o),0)/arr.length;
+  const sat=[["Kaya / oturum",o=>o.kaya],["XP / oturum",o=>o.xp]];
+  Object.keys(kz).sort((x,y)=>kz[y]-kz[x]).slice(0,6).forEach(k=>sat.push([ad(k)+" / oturum",o=>(o.kazanc||{})[k]||0]));
+  $("#growth").className="";
+  $("#growth").innerHTML = `<table><tr><th></th><th>İlk ${yari} oturum</th><th>Son ${yari} oturum</th><th>Değişim</th></tr>`+
+    sat.map(([n,f])=>{const x=ort(a,f), y=ort(b,f), d=x? (y-x)/x*100 : 0;
+      return `<tr><td>${n}</td><td>${kisa(x)}</td><td>${kisa(y)}</td><td class="${d>=0?"up":"down"}">${x?(d>=0?"+":"")+d.toFixed(0)+"%":"—"}</td></tr>`}).join("")+
+    `</table><div class="muted" style="font-size:12px;margin-top:8px">Botun aldığı yükseltmelerin etkisi: oturum başına kazancın zaman içindeki değişimi.</div>`;
+}
+function grafik(){
+  const k=$("#metric").value, os=(IST.oturumlar||[]).slice(-120);
+  const f = k==="kaya"? o=>o.kaya : k==="xp"? o=>o.xp : o=>(o.kazanc||{})[k.slice(2)]||0;
+  const v=os.map(f), svg=$("#chart"), W=600,H=220,P=28;
+  if(v.length<2){ svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle">Grafik için en az 2 oturum gerekiyor</text>`; $("#chartnote").textContent=""; return; }
+  const mx=Math.max(...v)*1.1||1, x=i=>P+(W-P-6)*i/(v.length-1), y=n=>H-20-(H-34)*n/mx;
+  const pts=v.map((n,i)=>`${x(i).toFixed(1)},${y(n).toFixed(1)}`).join(" ");
+  // hareketli ortalama (5)
+  const ma=v.map((_,i)=>{const s=v.slice(Math.max(0,i-4),i+1);return s.reduce((a,b)=>a+b,0)/s.length;});
+  const mapts=ma.map((n,i)=>`${x(i).toFixed(1)},${y(n).toFixed(1)}`).join(" ");
+  let grid=""; for(let i=0;i<=3;i++){const n=mx*i/3; grid+=`<line x1="${P}" x2="${W}" y1="${y(n)}" y2="${y(n)}" stroke="#2a2f3a" stroke-width="1"/><text x="2" y="${y(n)+4}">${kisa(n)}</text>`;}
+  svg.innerHTML = grid + `<polyline points="${pts}" fill="none" stroke="#f2b33d55" stroke-width="1.5"/>
+    <polyline points="${mapts}" fill="none" stroke="#f2b33d" stroke-width="2.5" stroke-linejoin="round"/>`;
+  $("#chartnote").textContent = `Son ${v.length} oturum · ince çizgi: oturum, kalın çizgi: 5 oturumluk ortalama`;
+}
+$("#reset").onclick = async ()=>{ if(confirm("Tüm istatistikler sıfırlansın mı?")){ await api("/api/kontrol",{komut:"sifirla_istatistik"}); ist(); toast("İstatistikler sıfırlandı"); } };
+
+/* ayarlar */
+const BOLUM_ADI = {panel:"Panel",pencere:"Pencere",tuslar:"Kısayol tuşları",kazma:"Ekran okuma modu (yedek)",mod_kazma:"Kazma",
+  yetenek:"Yetenek ağacı","yetenek.agirliklar":"Yetenek ağacı · düğüm önemleri",planlayici:"Planlayıcı (ortak bütçe)",ors:"Örs ve kazmalar",
+  "ors.kazma_bonus":"Örs · kazma bonus çarpanları",dunyalar:"Dünyalar ve kartlar","dunyalar.kart_agirliklari":"Dünyalar · kart önemleri",
+  madenler:"Otomatik madenler","madenler.agirliklar":"Otomatik madenler · ağırlıklar",engeller:"Açılır pencereler / takılma",ihtiyac:"İhtiyaç modu"};
+async function ayarYukle(){
+  const r = await api("/api/ayarlar");
+  $("#raw").value = r.ham||"";
+  if(r.hata){ $("#form").innerHTML=`<div class="card down">Dosya okunamadı: ${esc(r.hata)}. Ham düzenleyiciyi kullan.</div>`; return; }
+  const acik = new Set([...document.querySelectorAll("#form details[open]")].map(d=>d.dataset.b));
+  $("#form").innerHTML = r.bolumler.map(b=>`
+    <details class="sect" data-b="${b.bolum}" ${acik.has(b.bolum)?"open":""}>
+      <summary>${BOLUM_ADI[b.bolum]||b.bolum} <small>[${b.bolum}] · ${b.alanlar.length} ayar</small></summary>
+      ${b.aciklama?`<div class="field" style="display:block"><span class="help">${esc(b.aciklama)}</span></div>`:""}
+      ${b.alanlar.map(f=>alan(b.bolum,f)).join("")}
+    </details>`).join("");
+  document.querySelectorAll("#form [data-k]").forEach(el=>{
+    const ev = el.type==="checkbox" ? "change" : "change";
+    el.addEventListener(ev, ()=>kaydet(el));
+  });
+}
+function alan(b,f){
+  let inp; const id=`${b}|${f.anahtar}|${f.tip}`;
+  if(f.tip==="bool") inp=`<label class="tog"><input type="checkbox" data-k="${id}" ${f.deger?"checked":""}><span></span></label>`;
+  else if(f.tip==="int"||f.tip==="float") inp=`<input type="number" step="any" data-k="${id}" value="${f.deger}">`;
+  else if(f.tip==="list") inp=`<input type="text" data-k="${id}" value='${esc(JSON.stringify(f.deger))}'>`;
+  else inp=`<input type="text" data-k="${id}" value="${esc(f.deger)}">`;
+  return `<div class="field"><label>${esc(f.anahtar)}</label><div>${inp}</div><div class="help">${esc(f.aciklama||"")}</div></div>`;
+}
+async function kaydet(el){
+  const [bolum,anahtar,tip]=el.dataset.k.split("|"); let deger;
+  try{
+    if(tip==="bool") deger=el.checked;
+    else if(tip==="int"||tip==="float") { deger=Number(el.value); if(!Number.isFinite(deger)||el.value.trim()==="") throw 0; }
+    else if(tip==="list") deger=JSON.parse(el.value);
+    else deger=el.value;
+  }catch(e){ el.classList.add("err"); toast("Geçersiz değer",true); return; }
+  el.classList.remove("err");
+  const r = await api("/api/ayar",{bolum,anahtar,deger,tip});
+  if(r.hata){ el.classList.add("err"); toast("Kaydedilemedi: "+r.hata,true); } else toast(`Kaydedildi: ${anahtar}`);
+}
+$("#rawtoggle").onclick=()=>{ const h=$("#rawwrap").classList.toggle("hidden"); $("#form").classList.toggle("hidden",!h); $("#rawtoggle").textContent=h?"Ham dosyayı düzenle":"Form görünümü"; if(h) ayarYukle(); };
+$("#rawsave").onclick=async()=>{ const r=await api("/api/ayarlar_ham",{metin:$("#raw").value}); r.hata?toast("Kaydedilmedi: "+r.hata,true):toast("ayarlar.toml kaydedildi"); };
+
+/* günlük */
+let sonId=0, olaylar=[], filtre="hepsi";
+const acikNeden = new Set();   // açılan "neden?" ayrıntıları yenilemede kapanmasın
+document.addEventListener("toggle", e=>{ const d=e.target; if(d.tagName==="DETAILS"&&d.dataset.id){ const id=+d.dataset.id; d.open?acikNeden.add(id):acikNeden.delete(id); } }, true);
+$("#logbar").onclick=()=>$("#log").classList.toggle("open");
+function nedenMetni(n){
+  if(typeof n!=="object"||!n) return String(n);
+  return Object.entries(n).map(([k,v])=>{
+    if(Array.isArray(v)) return `${k}:\n` + (v.length? v.map(x=>"  • "+(typeof x==="object"?JSON.stringify(x):x)).join("\n") : "  —");
+    if(v&&typeof v==="object") return `${k}:\n` + Object.entries(v).map(([a,b])=>`  ${a}: ${typeof b==="object"?JSON.stringify(b):b}`).join("\n");
+    return `${k}: ${v}`; }).join("\n");
+}
+function evHtml(o, kisaGorunum){
+  const sinif = o.seviye==="hata"?"hata":(o.modul==="karar"?"karar":o.modul==="oturum"?"oturum":"");
+  const why = o.neden ? `<details data-id="${o.id}" ${acikNeden.has(o.id)?"open":""}><summary></summary><div class="why">${esc(nedenMetni(o.neden))}</div></details>` : "";
+  return kisaGorunum ? `<div class="ev ${sinif}"><time>${saat(o.t)}</time><div><div class="msg">${esc(o.mesaj)}</div>${why}</div></div>`
+    : `<div class="ev ${sinif}"><time>${saat(o.t)}</time><span class="m">${esc(o.modul)}</span><div><div class="msg">${esc(o.mesaj)}</div>${why}</div></div>`;
+}
+function logCiz(){
+  const mods=["hepsi","karar","oturum",...new Set(olaylar.map(o=>o.modul).filter(m=>!["karar","oturum"].includes(m)))];
+  $("#logtools").innerHTML = mods.map(m=>`<button class="${m===filtre?"act":""}" data-m="${m}">${m}</button>`).join("");
+  $("#logtools").querySelectorAll("button").forEach(b=>b.onclick=e=>{e.stopPropagation(); filtre=b.dataset.m; logCiz();});
+  const l=$("#loglist"), altta = l.scrollTop+l.clientHeight >= l.scrollHeight-30;
+  const g = olaylar.filter(o=>filtre==="hepsi"||o.modul===filtre).slice(-400);
+  l.innerHTML = g.map(o=>evHtml(o)).join("") || `<div class="empty">Kayıt yok.</div>`;
+  if(altta) l.scrollTop=l.scrollHeight;
+  const son=olaylar[olaylar.length-1]; if(son) $("#loglast").textContent = `${saat(son.t)} · ${son.modul} · ${son.mesaj}`;
+  $("#logcount").textContent = olaylar.length? `${olaylar.length} kayıt` : "";
+  const kararlar = olaylar.filter(o=>o.modul==="karar"||o.modul==="oturum").slice(-6).reverse();
+  $("#recent").className = kararlar.length? "" : "empty";
+  $("#recent").innerHTML = kararlar.length? kararlar.map(o=>evHtml(o,true)).join("") : "Henüz karar yok.";
+}
+async function logCek(){
+  try{ const y = await api("/api/olaylar?sonra="+sonId); if(y.length){ olaylar=olaylar.concat(y).slice(-1000); sonId=y[y.length-1].id; logCiz(); } }catch(e){}
+}
+
+
+/* eserler */
+async function eserYukle(){
+  const r = await api("/api/eserler"); if(r.hata){ $("#eserler").innerHTML=`<div class="empty">${esc(r.hata)}</div>`; return; }
+  const g={}; r.eserler.forEach(e=>{g[e.nadirlik]=g[e.nadirlik]||[0,0]; g[e.nadirlik][1]++; if(e.bulundu) g[e.nadirlik][0]++;});
+  const kp=[["Toplam",`${r.bulunan}/${r.toplam}`,`bot çalışırken ${r.bot_buldu} tane bulundu`]];
+  Object.entries(g).forEach(([k,[a,b]])=>kp.push([k,`${a}/${b}`,""]));
+  kp.push(["Sıradaki eser", r.siradaki_oturum? `~${r.siradaki_oturum.toFixed(1).replace(".",",")} oturum`:"—", `oturum başına ~${nf.format(r.kaya_oturum)} kaya ile`]);
+  $("#eserkpi").innerHTML = kp.map(([a,v,t])=>`<div class="card kpi"><h3>${a}</h3><div class="v">${v}</div><div class="s">${t}</div></div>`).join("");
+  $("#esernot").textContent = r.not;
+  $("#eserler").innerHTML = r.eserler.map(e=>{
+    const tah = e.tahmini_oturum==null ? "" : (e.tahmini_oturum>=10 ? nf.format(e.tahmini_oturum) : e.tahmini_oturum.toFixed(1));
+    return `<div class="art ${e.bulundu?"ok":""}"><div class="r ${e.nadirlik}">${e.nadirlik}</div><div>${esc(e.ad)}</div>
+      <div class="e">${e.bulundu?"✓ bulundu":`~${tah} oturum · %${(e.sans*100).toFixed(4)} / kaya`}</div></div>`; }).join("");
+}
+/* kartlar */
+async function kartYukle(){
+  const r = await api("/api/kartlar"); if(r.hata){ $("#kartlar").innerHTML=`<div class="empty">${esc(r.hata)}</div>`; return; }
+  $("#kartkitap").innerHTML = `Kırmızı kitap <b>${r.kirmizi_kitap??0}</b>`;
+  const k = r.kartlar.slice().sort((a,b)=>(b.secili-a.secili)||(b.agirlik-a.agirlik));
+  $("#kartlar").innerHTML = k.map(c=>`<div class="kart ${c.secili?"sec":""}"><div class="t"><b>${esc(c.baslik)}</b>
+    <span class="badge ${c.secili?"on":""}">${c.secili?`seçili · sv ${c.seviye}`:"seçilmedi"}</span></div>
+    <p>${esc(c.aciklama)}</p><div class="w">Önem <input type="number" value="${c.agirlik}" data-kart="${c.kod}">
+    ${c.secili?`<span>yükseltme puanı ${(c.agirlik/c.seviye).toFixed(1)}</span>`:""}</div></div>`).join("");
+  document.querySelectorAll("[data-kart]").forEach(el=>el.onchange=async()=>{
+    const r=await api("/api/kart_agirlik",{kod:el.dataset.kart,deger:el.value}); r.hata?toast(r.hata,true):toast("Kart önemi kaydedildi"); kartYukle(); });
+}
+/* deney */
+let AYARLISTE=[];
+async function deneyYukle(){
+  if(!AYARLISTE.length){
+    const a=await api("/api/ayarlar");
+    (a.bolumler||[]).forEach(b=>b.alanlar.forEach(f=>{ if(["int","float","bool"].includes(f.tip)) AYARLISTE.push({b:b.bolum,k:f.anahtar,v:f.deger,t:f.tip}); }));
+    $("#dAyar").innerHTML = AYARLISTE.map((x,i)=>`<option value="${i}">[${x.b}] ${x.k} (şu an ${x.v})</option>`).join("");
+    const ilk = AYARLISTE.findIndex(x=>x.b==="mod_kazma"&&x.k==="cember_kullanim"); if(ilk>=0) $("#dAyar").value=ilk;
+    const dol=()=>{const x=AYARLISTE[$("#dAyar").value]; if(x){ $("#dA").value=x.v; $("#dB").value= x.t==="bool"? String(!x.v) : x.t==="int"? Math.round(x.v*1.5) : +(x.v*1.2).toFixed(3); }};
+    $("#dAyar").onchange=dol; dol();
+  }
+  const r = await api("/api/deney"); const o=r.ozet||{}, d=r.deney||{};
+  if(!o.ayar){ $("#deneysonuc").className="empty"; $("#deneysonuc").textContent="Çalışan ya da biten deney yok."; return; }
+  $("#deneysonuc").className="";
+  const satir = v=>`<tr><td>${v}</td><td>${esc(JSON.stringify(o[v].deger))}</td><td>${o[v].n} / ${o.hedef}</td><td>${kisa(o[v].ortalama)}</td><td>${kisa(o[v].sapma)}</td></tr>`;
+  const alt = o.fark_yuzde!=null
+    ? `<p style="margin:10px 0 0">B, A'ya göre <b class="${o.fark_yuzde>=0?"up":"down"}">${o.fark_yuzde>=0?"+":""}${o.fark_yuzde}%</b> · güven: ${esc(o.guven)} · kazanan: <b>${esc(o.kazanan)}</b></p>`
+    : `<p class="muted" style="margin:10px 0 0">Sonuç için her iki tarafta en az 2 oturum gerekiyor.</p>`;
+  $("#deneysonuc").innerHTML = `<div class="row" style="margin-bottom:8px"><span>${esc(o.ayar)} · ölçü: ${esc(o.metrik)}</span>
+    <span class="badge ${o.aktif?"on":""}">${o.aktif?`çalışıyor · sıradaki: ${d.sira}`:"bitti"}</span></div>
+    <table><tr><th>Varyant</th><th>Değer</th><th>Oturum</th><th>Ortalama</th><th>Sapma</th></tr>${satir("A")}${satir("B")}</table>${alt}`;
+}
+function cevirDeger(s,t){ if(t==="bool") return s==="true"||s==="1"; const n=Number(s); if(!Number.isFinite(n)) throw 0; return t==="int"?Math.round(n):n; }
+$("#dBas").onclick=async()=>{ const x=AYARLISTE[$("#dAyar").value]; let A,B;
+  try{A=cevirDeger($("#dA").value,x.t);B=cevirDeger($("#dB").value,x.t);}catch(e){toast("Geçersiz değer",true);return;}
+  const r=await api("/api/deney",{komut:"baslat",bolum:x.b,anahtar:x.k,A,B,hedef:+$("#dN").value||8,metrik:$("#dM").value,kazanani_uygula:$("#dK").checked});
+  r.hata?toast(r.hata,true):toast("Deney başladı"); deneyYukle(); };
+$("#dDur").onclick=async()=>{ await api("/api/deney",{komut:"durdur"}); toast("Deney durduruldu"); deneyYukle(); };
+setInterval(()=>{ if(!$("#deney").classList.contains("hidden")) deneyYukle(); if(!$("#eser").classList.contains("hidden")) eserYukle(); }, 8000);
+
+durum(); ist(); logCek();
+setInterval(durum,2000); setInterval(logCek,1500); setInterval(ist,6000);
+</script>
+</body>
+</html>

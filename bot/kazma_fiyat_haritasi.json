@@ -1,0 +1,80 @@
+{
+ "1": {
+  "pickaxe2SilverPrice": "silver"
+ },
+ "2": {
+  "pickaxe3CopperPrice": "copper",
+  "pickaxe3GoldPrice": "gold"
+ },
+ "3": {
+  "pickaxe4CopperPrice": "copper",
+  "pickaxe4SilverPrice": "silver",
+  "pickaxe4GoldPrice": "gold"
+ },
+ "4": {
+  "pickaxe5SulfurPrice": "sulfur",
+  "pickaxe5GoldPrice": "gold"
+ },
+ "5": {
+  "pickaxe6ObsidianPrice": "obsidian"
+ },
+ "6": {
+  "pickaxe7ObsidianPrice": "obsidian",
+  "pickaxe7SulfurPrice": "sulfur",
+  "pickaxe7GoldPrice": "gold"
+ },
+ "7": {
+  "pickaxe8TitaniumPrice": "titanium"
+ },
+ "8": {
+  "pickaxe9RealgarPrice": "realgar",
+  "pickaxe9GoldPrice": "gold"
+ },
+ "9": {
+  "pickaxe10TitaniumPrice": "titanium",
+  "pickaxe10CopperPrice": "copper"
+ },
+ "10": {
+  "pickaxe11RhodonitePrice": "rhodonite"
+ },
+ "11": {
+  "pickaxe12MeteoritePrice": "amberite"
+ },
+ "12": {
+  "pickaxe13RhodonitePrice": "rhodonite",
+  "pickaxe13SilverPrice": "silver"
+ },
+ "13": {
+  "pickaxe14MeteoritePrice": "meteorite"
+ },
+ "14": {
+  "pickaxe15ViridiumPrice": "viridium",
+  "pickaxe15GoldPrice": "gold"
+ },
+ "15": {
+  "pickaxe16GoldPrice": "gold"
+ },
+ "16": {
+  "pickaxe17MythrilPrice": "mythril",
+  "pickaxe17AmberitePrice": "amberite",
+  "pickaxe17RealgarPrice": "realgar"
+ },
+ "17": {
+  "pickaxe18DigititePrice": "digitite"
+ },
+ "18": {
+  "pickaxe19MagisitePrice": "magisite",
+  "pickaxe19ViridiumPrice": "viridium"
+ },
+ "19": {
+  "pickaxe20ObsidianPrice": "obsidian",
+  "pickaxe20TitaniumPrice": "titanium",
+  "pickaxe20DigititePrice": "digitite"
+ },
+ "20": {
+  "pickaxe21EdenitePrice": "edenite"
+ },
+ "21": {
+  "pickaxe22PrismitePrice": "prismite"
+ }
+}

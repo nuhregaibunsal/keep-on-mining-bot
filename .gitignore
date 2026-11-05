@@ -1,0 +1,12 @@
+# Runtime data and personal files
+__pycache__/
+graphify-out/
+.claude/
+kayitlar/
+engeller/
+yedek/
+# Extracted / decompiled game data and third-party binaries
+araclar/
+kesif/
+*.dll
+*.zip

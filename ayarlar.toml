@@ -1,0 +1,280 @@
+# Keep on Mining Bot - ayarlar
+# Koordinatlar oyun penceresinin iç alanına göre ORANSALDIR (0.0 - 1.0),
+# böylece 1920x1080 ve 2560x1440'ta aynı ayarlar çalışır.
+
+[pencere]
+# Pencere başlığında geçen metin
+baslik = "Keep on Mining"
+
+[panel]
+otomatik_baslat = true    # true: bot açılınca kazmaya kendiliğinden başlar
+
+[bekci]
+# Gece boyu başında kimse yokken botu ayakta tutar
+aktif = true
+uyku_engelle = true        # bot çalışırken bilgisayar uykuya geçmesin (ekran kapanabilir)
+kopru_zaman_asimi = 60     # köprü bu kadar saniye yanıt vermezse oyunu yeniden başlat
+takilma_dk = 4             # bu kadar dakika maden oturumu ilerlemezse açılır pencere kurtarması dene
+yeniden_baslatma_dk = 8    # bu kadar dakika ilerleme yoksa oyunu yeniden başlat
+calisma_saatleri = ""      # örn. "23:00-08:00"; boşsa her zaman çalışır
+
+[tuslar]
+# Başlat / duraklat ve tamamen durdur tuşları
+baslat_duraklat = "F8"
+durdur = "F9"
+
+[kazma]
+# Kazma alanı (tahtanın kapladığı dikdörtgen, oransal: sol, üst, sağ, alt)
+tahta = [0.12, 0.10, 0.88, 0.90]
+# Arayüz (HUD) bölgeleri: buralar asla kazılmaz / tıklanmaz (pencereye göre oransal: sol, üst, sağ, alt)
+# sol üst cevher sayaçları, sol alt mücevher+XP, sağ üst süre, sağ alt buton/bildirim
+yasak = [
+  [0.00, 0.00, 0.26, 0.21],
+  [0.00, 0.80, 0.27, 1.00],
+  [0.77, 0.00, 1.00, 0.13],
+  [0.82, 0.84, 1.00, 1.00],
+]
+# Bir hedefin üstünde en fazla kaç saniye beklenecek
+hedef_zaman_asimi = 2.5
+# Ekran yeniden okuma aralığı (saniye)
+tarama_araligi = 0.12
+# Hiç değerli hedef kalmayınca tahtayı zikzakla süpür
+bos_kalinca_supur = true
+# Zemin/kaya renklerini her madende otomatik öğren (dünya değişince arka plan değişse de çalışır)
+zemin_ogren = true
+# Bir renk tahtanın bu orandan fazlasını kaplıyorsa "zemin/kaya" sayılır, cevher değildir
+zemin_esigi = 0.04
+# 1080p'de en küçük cevher lekesi (piksel alanı); çözünürlüğe göre otomatik ölçeklenir
+min_alan = 18
+
+# Cevher sınıfları: HSV aralıkları (OpenCV: H 0-180, S 0-255, V 0-255) ve öncelik puanı.
+# Puan yüksek olan önce kazılır. "ihtiyac" modunda belirli bir sınıfın puanı katlanır.
+[[cevher]]
+ad = "mucevher_kirmizi"
+hsv_alt = [0, 150, 120]
+hsv_ust = [7, 255, 255]
+puan = 90
+
+[[cevher]]
+ad = "mucevher_kirmizi2"
+hsv_alt = [172, 150, 120]
+hsv_ust = [180, 255, 255]
+puan = 90
+
+[[cevher]]
+ad = "mor_kristal"
+hsv_alt = [128, 120, 120]
+hsv_ust = [160, 255, 255]
+puan = 80
+
+[[cevher]]
+ad = "altin_kulce"
+hsv_alt = [18, 150, 200]
+hsv_ust = [32, 255, 255]
+puan = 60
+
+[[cevher]]
+ad = "turuncu_cevher"
+hsv_alt = [8, 170, 170]
+hsv_ust = [18, 255, 255]
+puan = 40
+
+[[cevher]]
+ad = "bakir_pembe"
+hsv_alt = [0, 70, 170]
+hsv_ust = [12, 150, 255]
+puan = 35
+
+[[cevher]]
+ad = "gumus_beyaz"
+hsv_alt = [0, 0, 205]
+hsv_ust = [180, 35, 255]
+puan = 30
+
+# ---------------- MOD MODU (oyun BepInEx + KomKopru ile açıksa otomatik kullanılır) ----------------
+[mod_kazma]
+# Puan = 100 / oyundaki çıkma şansı (%). Yani en nadir olan önce kazılır.
+# Örn. yakut %3,3 -> 30 puan, ay taşı %0,34 -> 294 puan, benekli altın %10,4 -> 9,6 puan.
+eser = 100000          # eser taşıyan kaya: her şeyin önünde
+mucevher_carpani = 1.0 # mücevherleri cevherlere göre öne almak istersen büyüt (örn. 1.5)
+cevher_carpani = 1.0
+bilinmeyen_puan = 20   # şansı okunamayan tür için varsayılan puan
+siradan_kaya = 1       # boş kaya (değerli bir şey kalmayınca bunlar kazılır)
+gokkusagi = 500
+esit_sayilma_orani = 0.9  # en yüksek puanın %90'ı üstündekiler "eşit" sayılır, aralarından en yakını seçilir
+hedef_zaman_asimi = 3.0
+tarama_araligi = 0.08
+halo_oncelik = true    # Halo kartı: ekranda halo varsa önce onu em (oturum boyunca cevher çarpanı)
+sanal_imlec = true     # true: gerçek fareye dokunmadan kazar (oyun arka plandayken de)
+cember_kullanim = 1    # dairenin yarıçapının ne kadarını "kesin vurur" sayalım
+kalma_orani = 0.85     # mevcut nokta en iyinin %85'i kadar değerliyse yerinde kal (zıplamayı azaltır)
+eklenti_guncellenince_yeniden_baslat = true  # yeni köprü eklentisi varsa oyunu kapatıp yeniden aç
+otomatik_yeniden_baslat = true  # süre bitince MADENE GİT'e bas
+
+[yetenek]
+aktif = true
+tur_basina_en_fazla = 30   # bir oturum sonunda en fazla kaç yükseltme alınsın
+yedek_oran = 0.0           # her külçeden bu oranı harcama (örn. 0.2 = %20'sini örs için ayır)
+varsayilan_agirlik = 20
+birikim_esigi = 70         # ağırlığı bu ve üstü olan pahalı yükseltme için o kaynakta birikim yap
+kucuk_harcama_orani = 0.1  # birikim yapılan kaynaktan sadece cüzdanın %10'undan ucuz şeyler alınır
+# Düğüm adında geçen kelime -> önem. En yüksek eşleşen kullanılır.
+[yetenek.agirliklar]
+Artifact = 100        # eser şansı (en önemli)
+Unlock = 90           # yeni maden/cevher/özellik açar
+MoreTime = 80         # daha uzun kazma süresi
+OreValue = 70         # cevher değeri
+DoubleValue = 65
+GemValue = 60
+MoreRocks = 55
+SpawnChance = 50
+SpawnRock = 50
+MineRockSpawnRock = 50
+InstaMine = 45
+DestroyRandomRock = 40
+CircleSize = 45
+SmallCircle = 40
+Chunk = 40
+Full = 40
+Spawn = 35            # SpawnRuby, SpawnPeridot ... (mücevher açma/şans)
+MoreXP = 30
+XPMultiplier = 30
+OreMultiplier = 45
+Anomaly = 25
+Molotov = 20
+Molotove = 20
+Bomb = 20
+Dynamite = 20
+Projectile = 20
+
+[planlayici]
+# Örs ve yetenek ağacı TEK bütçeden harcar. Değeri bu eşiğin üstündeki pahalı hedefler için birikim yapılır.
+birikim_esigi = 70
+kucuk_harcama_orani = 0.1   # birikim yapılan kaynaktan sadece cüzdanın %10'undan ucuz şeyler alınır
+yedek_oran = 0.0
+tur_basina_en_fazla = 40
+
+[ors]
+aktif = true
+yapim_agirlik = 70          # yeni kazma değeri = 70 × (yeni kazmanın potansiyel gücü / en iyi kazmanınki), 20-150 arası
+seviye_agirlik = 75         # kuşanılı kazmanın seviye atlatma değeri (mücevherle; külçelerle çakışmaz)
+kulce_harcama_orani = 1.0      # yeni kazma yapımında külçelerin en fazla bu oranı kullanılır
+mucevher_harcama_orani = 0.8   # seviye atlatmada mücevherin en fazla %80'i harcanır
+# Kazmaların özel bonusları için çarpan (örn. 7. kazma eser şansı verir -> biraz öne al)
+[ors.kazma_bonus]
+"7" = 1.3
+
+[ors.paylasilan]
+# Paylaşılan güçlendirmeler (SharedBuffs kartı): kuşanılı olmayan kazmaların bonusları.
+# Kuşanılı kazma hariç, yapılmış kazmalardan ağırlığı en yüksek olanlar (kart seviyesi kadar) seçilir.
+aktif = true
+varsayilan = 40            # aşağıda olmayan (henüz yapılmamış) kazmalar için
+[ors.paylasilan.agirliklar]
+"1" = 25    # her 80 cevherden biri 2x değerli
+"2" = 35    # cevher/mücevher/XP çift düşme şansı +%1,5
+"3" = 30    # 1,6 sn'de bir kaya oluşturur
+"4" = 35    # cevher değer çarpanı +0,2x
+"5" = 20    # her 20 mücevherden biri 2x değerli
+"6" = 60    # 3 sn'de bir kayaları anında kazan yıldırım
+"7" = 70    # tüm eserlerin çıkma şansı +%5
+"8" = 55    # oturumda 200+ kaya kazılırsa XP çarpanı +1x
+"9" = 15    # bombadan %3 ihtimalle bir tane daha
+"10" = 30   # oturum başında %25 ihtimalle rastgele bedava eşya
+"11" = 65   # cevher değer çarpanı +2,2x
+
+[dunyalar]
+dunya_ac = true       # mor kitap yetince sıradaki dünyayı aç
+kart_yukselt = true   # kırmızı kitap varsa seçili bir kartı yükselt
+dunya_sec = true      # kazılacak en verimli açık dünyayı otomatik seç
+xp_agirlik = 0.3      # dünya seçiminde XP'nin payı (0 = sadece cevher, 1 = sadece XP)
+tahta_yenilenme = 2.0 # bir oturumda tahtadaki kayaların yaklaşık kaç katı kazılabilir (yeni kaya doğması)
+varsayilan_kart = 50
+# Kart önceliği (yüksek = önce seçilir/yükseltilir). Kartın adı oyundaki "CardN_Ad" kısmından.
+[dunyalar.kart_agirliklari]
+GoldenClover = 58
+Excavator = 90
+Explorer = 75
+Collector = 80
+SteadyGains = 52
+RisingPower = 50
+Halo = 70
+Forger = 72
+RainbowRock = 45
+MoreSkillsMoreGains = 85
+Expansion = 55
+GoldenHour = 62
+SharedBuffs = 40
+OreBeam = 65
+BeamOfDestruction = 68
+ThorsHammer = 60
+GigaExplosion = 38
+CritHitEffect = 40
+BigRocks = 48
+EnvironmentalBuffs = 35
+OnTheHouse = 45
+TakCompleter = 45
+
+[madenler]
+aktif = true
+tur_basina_en_fazla = 6  # bir oturum arasında madenlere en fazla kaç yükseltme yapılsın
+satin_al = true        # alınmamış madenleri (XP madeni hariç: mor kitap ister) satın al
+# Maden ağırlıkları: %10 üretim artışı bu değere eşit sayılır (yetenek ağırlıklarıyla aynı ölçek)
+[madenler.agirliklar]
+bar = 40
+gem = 40
+xp = 35
+coin = 25
+
+[pazar]
+# İksir ve yiyecekler: stokta tut, her oturum öncesi kullan, mücevherle yükselt
+aktif = true
+kullan = true              # her oturumdan önce stoktaki eşyaları kullan
+stok_hedefi = 2            # her eşyadan elde en az bu kadar tut (paralarla satın alınır)
+tur_basina_en_fazla = 8    # bir oturum arasında pazarda en fazla kaç alım/yükseltme yapılsın
+yukselt = true             # eşyaları mücevherle yükselt (örsle aynı bütçede yarışır)
+yukseltme_carpani = 0.8    # yükseltmenin değeri = eşya ağırlığı × bu çarpan
+varsayilan_agirlik = 30
+# Eşya ağırlıkları (0 = hiç alma/kullanma). Etkiler oyundan: OrePotion cevher değeri, timePotion ek süre...
+[pazar.agirliklar]
+OrePotion = 65             # cevher değer çarpanı
+timePotion = 60            # oturuma ek süre
+artifactRune = 70          # eser çıkma şansı
+muffin = 50                # çift düşme şansı
+coffee = 50                # kazma hızı
+xpPotion = 45
+cake = 45                  # çember boyutu
+hotChili = 40              # çift hız şansı
+DamagePotion = 40
+steak = 40                 # anında kazma şansı
+chicken = 35               # kritik şansı
+fish = 35                  # kritik hasar
+crayons = 35
+rainbowPotion = 60
+rockSalad = 45
+oreSalad = 40
+brokenCoin1 = 45
+brokenCoin2 = 45
+oreMushroom = 50
+
+[cekirdek]
+# Dünya Çekirdeği (oyun sonu): her düğüm alımı = +1 seviye; seviye 100'de Steam başarımı.
+# Bot cüzdana göre en ucuz düğümleri önce alır.
+aktif = true
+deger = 85            # planlayıcıdaki önemi (birikim eşiğinin üstünde: kaynakları çekirdek için biriktirir)
+hedef_seviye = 0      # 0 = sınırsız; örn. 100 yazarsan 100'de durur
+
+[engeller]
+# Bu yazıları taşıyan butonlar açılır pencere kapatma butonu sayılır ve bot kendisi basar.
+# Bot tanımadığı bir ekranda takılırsa engeller/ klasörüne kaydeder; buraya ekleyebilirsin.
+kapatma_butonlari = ["HARİKA!", "Harika!", "TAMAM", "Tamam", "TAMAM!", "Kapat", "KAPAT", "Devam", "DEVAM", "Anladım", "ANLADIM", "OK"]
+# Bunlara bot asla kendiliğinden basmaz
+asla_basma = ["Oyundan Çık", "OTURUMU BİTİR", "SIFIRLA", "Sıfırla"]
+takilma_suresi = 20   # saniye boyunca ilerleme yoksa "takıldı" say
+
+[ihtiyac]
+# Mod modunda belirli bir cevher lazımsa (örn. "silver") puanı çarpanla artar
+mod_hedef = ""
+# Örs/yetenek için belirli bir kaynak lazımsa buraya sınıf adını yaz, puanı çarpanla artar.
+# Örn: hedef = "gumus_beyaz"
+hedef = ""
+carpan = 3.0
